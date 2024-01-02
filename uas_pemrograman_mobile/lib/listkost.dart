@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'addkost.dart';
+import 'updatekost.dart';
 import 'user.dart';
 import 'message.dart';
 import 'api_manager.dart';
 
 class ListKostPage extends StatelessWidget {
   final ApiManager apiManager = ApiManager(baseUrl: 'http://127.0.0.1:8000/api');
+
   @override
   Widget build(BuildContext context) {
     final apiManager = Provider.of<ApiManager>(context, listen: false);
@@ -17,25 +19,23 @@ class ListKostPage extends StatelessWidget {
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-  future: apiManager.getKosts(),
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return CircularProgressIndicator();
-    } else if (snapshot.hasError) {
-      return Text('Error: ${snapshot.error}');
-    } else {
-      // Render daftar kost menggunakan data dari snapshot.data
-      List<Map<String, dynamic>> kosts = snapshot.data!;
-      return ListView.builder(
-        itemCount: kosts.length,
-        itemBuilder: (context, index) {
-          return buildKostCard(kosts[index]);
+        future: apiManager.getKosts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            List<Map<String, dynamic>> kosts = snapshot.data!;
+            return ListView.builder(
+              itemCount: kosts.length,
+              itemBuilder: (context, index) {
+                return buildKostCard(kosts[index], context);
+              },
+            );
+          }
         },
-      );
-    }
-  },
-),
-
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         type: BottomNavigationBarType.fixed,
@@ -75,10 +75,10 @@ class ListKostPage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => AddKostPage()),
             );
           } else if (index == 3) {
-          Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => MyApp()),
-    );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MyApp()),
+            );
           } else if (index == 4) {
             Navigator.pushReplacement(
               context,
@@ -90,33 +90,7 @@ class ListKostPage extends StatelessWidget {
     );
   }
 
-  Widget buildKostList(List<Map<String, dynamic>> kostList) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Daftar Kost',
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 20.0),
-          Expanded(
-            child: ListView.builder(
-              itemCount: kostList.length,
-              itemBuilder: (context, index) {
-                Map<String, dynamic> kostData = kostList[index];
-                return buildKostCard(kostData);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildKostCard(Map<String, dynamic> kostData) {
-    // Gunakan data Kost dari API untuk membangun tampilan setiap item di ListView
+  Widget buildKostCard(Map<String, dynamic> kostData, BuildContext context) {
     return Card(
       margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
@@ -127,7 +101,10 @@ class ListKostPage extends StatelessWidget {
           height: 50.0,
           fit: BoxFit.cover,
         ),
-        title: Text(kostData['name'],style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold,),),
+        title: Text(
+          kostData['name'],
+          style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -143,19 +120,50 @@ class ListKostPage extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.edit),
               onPressed: () {
-                // Aksi saat ikon edit diklik (update)
-                // Anda dapat menambahkan navigasi ke halaman update atau fungsi lainnya
-                // dengan membawa data kost yang ingin di-update
-                print('Update Kost: ${kostData['name']}');
-              },
+    // Navigasi ke halaman UpdateKostPage dengan membawa data Kost yang akan diupdate
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UpdateKostPage(kostData: kostData)),
+    ).then((result) {
+      // Refresh halaman jika update berhasil
+      if (result == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Kost berhasil diupdate!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        // Tambahkan logika refresh data jika diperlukan
+      }
+    });
+  },
             ),
             IconButton(
               icon: Icon(Icons.delete),
-              onPressed: () {
-                // Aksi saat ikon delete diklik (hapus)
-                // Anda dapat menambahkan fungsi hapus data kost dari list
-                // seperti pada halaman List Kost sebelumnya
-                print('Delete Kost: ${kostData['name']}');
+              onPressed: () async {
+                try {
+                  await apiManager.deleteKost(kostData['id']);
+                  print('Delete Kost: ${kostData['name']}');
+
+                  // Menampilkan notifikasi bahwa Kost berhasil dihapus
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Kost berhasil dihapus!'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+
+                  // Membuat fungsi async untuk menunggu sebentar sebelum mengarahkan ulang
+                  Future.delayed(Duration(seconds: 2), () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => ListKostPage()),
+                    );
+                  });
+
+                } catch (e) {
+                  print('Error: $e');
+                }
               },
             ),
           ],

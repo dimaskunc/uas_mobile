@@ -80,20 +80,12 @@ class ApiManager {
     }
   }
 
-  Future<void> updateKost({
-    required int id,
-    required String name,
-    required String type,
-    required String photo,
-    required String location,
-    required double price,
-    required List<String> facilities,
-  }) async {
+  Future<void> updateKost(String id, String name, String type, String photo, String location, String price, String facilities) async {
     final response = await http.put(
       Uri.parse('$baseUrl/kosts/{id}'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: {
-        'id': id.toString(),
+        'id': id,
         'name': name,
         'type': type,
         'photo': photo,
@@ -108,11 +100,19 @@ class ApiManager {
     }
   }
 
-  Future<void> deleteKost(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/kosts/{id}'));
+  Future<int?> deleteKost(int id) async {
+    final token = await storage.read(key: 'kode_rahassia');
+     final response = await http.delete(
+      Uri.parse('$baseUrl/kosts'),
+      headers: {'Authorization': 'Bearer $token'},
+      body: jsonEncode({'id': id}), 
+    );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to delete kost');
+      throw Exception('Failed to delete kost ${token}');
+    }
+    else{
+      return response.statusCode;
     }
   }
 
