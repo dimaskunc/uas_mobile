@@ -90,7 +90,7 @@ class ApiManager {
         'type': type,
         'photo': photo,
         'location': location,
-        'price': price.toString(),
+        'price': price,
         'facilities': facilities,
       },
     );

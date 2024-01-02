@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'api_manager.dart';
 
 class UpdateKostPage extends StatefulWidget {
@@ -72,7 +71,7 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
         tipe,
         foto,
         lokasi,
-        double.parse(harga) as String,
+        harga,
         fasilitas,
       );
 
@@ -90,7 +89,7 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
       // Menampilkan notifikasi bahwa terjadi kesalahan
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Terjadi kesalahan. Coba lagi nanti.'),
+          content: Text('Terjadi kesalahan. Coba lagi nanti. $e'),
           duration: Duration(seconds: 2),
         ),
       );
@@ -132,7 +131,6 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
             TextField(
               controller: _hargaController,
               decoration: InputDecoration(labelText: 'Harga'),
-              keyboardType: TextInputType.number,
             ),
             TextField(
               controller: _fasilitasController,
