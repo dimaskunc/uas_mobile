@@ -127,14 +127,14 @@ class ListKostPage extends StatelessWidget {
           height: 50.0,
           fit: BoxFit.cover,
         ),
-        title: Text(kostData['name']),
+        title: Text(kostData['name'],style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold,),),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Tipe: ${kostData['type']}'),
-            Text('Lokasi: ${kostData['location']}'),
-            Text('Harga: ${kostData['price']}'),
-            Text('Fasilitas: ${kostData['facilities']}'),
+            Text('Kost ${kostData['type']}'),
+            Text('${kostData['location']}'),
+            Text('Rp ${kostData['price']}'),
+            Text('Fasilitas : ${kostData['facilities']}'),
           ],
         ),
         trailing: Row(

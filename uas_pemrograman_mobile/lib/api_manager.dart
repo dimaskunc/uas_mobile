@@ -131,7 +131,7 @@ class ApiManager {
       final token = "Succesfully";
       return token;
     } else {
-      throw Exception('Failed to registertgtbtbtbttbtbtbt');
+      throw Exception('Failed to register, email sudah tersedia');
 
     }
   }
