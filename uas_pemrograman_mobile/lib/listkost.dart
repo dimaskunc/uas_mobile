@@ -133,7 +133,13 @@ class ListKostPage extends StatelessWidget {
             duration: Duration(seconds: 2),
           ),
         );
-        // Tambahkan logika refresh data jika diperlukan
+
+         Future.delayed(Duration(seconds: 2), () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => ListKostPage()),
+                    );
+                  });
       }
     });
   },
