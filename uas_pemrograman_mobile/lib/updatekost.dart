@@ -102,6 +102,7 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
       appBar: AppBar(
         title: Text('Update Kost', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 66, 163, 243),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

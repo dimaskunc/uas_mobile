@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'dart:io';
 
 class ApiManager {
   final String baseUrl;
@@ -9,39 +10,61 @@ class ApiManager {
 
   ApiManager({required this.baseUrl});
 
-  Future<void> addKost(
-  String name,
-  String type,
-  String photo,
-  String location,
-  String price,
-  String facilities,
-) async {
+//   Future<void> addKost(
+//   String name,
+//   String type,
+//   String photo,
+//   String location,
+//   String price,
+//   String facilities,
+// ) async {
   
-    final response = await http.post(
-      Uri.parse('$baseUrl/kosts'),
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'name': name,
-        'type': type,
-        'photo': photo,
-        'location': location,
-        'price': price,
-        'facilities': facilities,
-      },
-    );
+//     final response = await http.post(
+//       Uri.parse('$baseUrl/kosts'),
+//       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+//       body: {
+//         'name': name,
+//         'type': type,
+//         'photo': photo,
+//         'location': location,
+//         'price': price,
+//         'facilities': facilities,
+//       },
+//     );
 
-    print(response);
+//     print(response);
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+//     print('Response status: ${response.statusCode}');
+//     print('Response body: ${response.body}');
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to add kost');
+//     if (response.statusCode != 200) {
+//       throw Exception('Failed to add kost');
+//     }
+  
+// }
+
+Future<dynamic> addKost(File image, String name, String type,
+      String price, String location, String facilities) async {
+    final uri = Uri.parse('$baseUrl/kosts');
+    var request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath('image', image.path))
+      ..fields['name'] = name
+      ..fields['type'] = type
+      ..fields['facilities'] = facilities
+      ..fields['price'] = price
+      ..fields['location'] = location
+      ..headers['Content-Type'] = 'application/json';
+
+    var response = await request.send();
+    var responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(responseBody);
+      return jsonResponse['message'];
+    } else {
+      return 'Failed to add kost. Status Code: ${response.statusCode}';
     }
-  
-}
-
+  }
 
   Future<void> addKostt(
     String name,

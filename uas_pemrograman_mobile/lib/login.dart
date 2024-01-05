@@ -32,8 +32,13 @@ class _LoginPageState extends State<LoginPage> {
       userManager.setAuthToken(token);
       Navigator.pushReplacementNamed(context, '/dashboard');
     } catch (e) {
-      print('Authentication faileddddddddddddddd. Error: $e');
-      // Handle authentication failure
+      print('Authentication failed. Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Login gagal. Silahkan Login Kembali'),
+        duration: Duration(seconds: 2),
+      ),
+    );
     }
   }
 

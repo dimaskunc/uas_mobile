@@ -5,9 +5,10 @@ import 'updatekost.dart';
 import 'user.dart';
 import 'message.dart';
 import 'api_manager.dart';
+import 'detailkost.dart';
 
 class ListKostPage extends StatelessWidget {
-  final ApiManager apiManager = ApiManager(baseUrl: 'http://127.0.0.1:8000/api');
+  final ApiManager apiManager = ApiManager(baseUrl: 'http://10.10.21.41:8000/api');
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +97,7 @@ class ListKostPage extends StatelessWidget {
       child: ListTile(
         contentPadding: EdgeInsets.all(16.0),
         leading: Image.network(
-          kostData['photo'],
+          'http://10.10.21.41:8000/img/${kostData['file_name']}',
           width: 50.0,
           height: 50.0,
           fit: BoxFit.cover,
@@ -114,6 +115,12 @@ class ListKostPage extends StatelessWidget {
             Text('Fasilitas : ${kostData['facilities']}'),
           ],
         ),
+         onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DetailKostPage(kostData: kostData)),
+      );
+    },
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -145,33 +152,62 @@ class ListKostPage extends StatelessWidget {
   },
             ),
             IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () async {
-                try {
-                  await apiManager.deleteKost(kostData['id']);
-                  print('Delete Kost: ${kostData['name']}');
-
-                  // Menampilkan notifikasi bahwa Kost berhasil dihapus
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Kost berhasil dihapus!'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-
-                  // Membuat fungsi async untuk menunggu sebentar sebelum mengarahkan ulang
-                  Future.delayed(Duration(seconds: 2), () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => ListKostPage()),
-                    );
-                  });
-
-                } catch (e) {
-                  print('Error: $e');
-                }
+  icon: Icon(Icons.delete),
+  onPressed: () async {
+    // Tampilkan dialog konfirmasi
+    bool deleteConfirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Konfirmasi Hapus'),
+          content: Text('Apakah Anda yakin ingin menghapus data dengan ID ${kostData['id']}?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Batal menghapus
               },
+              child: Text('Batal'),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Konfirmasi menghapus
+              },
+              child: Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Jika konfirmasi untuk menghapus diberikan
+    if (deleteConfirmed == true) {
+      try {
+        await apiManager.deleteKost(kostData['id']);
+        print('Delete Kost: ${kostData['name']}');
+
+        // Menampilkan notifikasi bahwa Kost berhasil dihapus
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Kost berhasil dihapus!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Membuat fungsi async untuk menunggu sebentar sebelum mengarahkan ulang
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ListKostPage()),
+          );
+        });
+
+      } catch (e) {
+        print('Error: $e');
+      }
+    }
+  },
+),
+
           ],
         ),
       ),
