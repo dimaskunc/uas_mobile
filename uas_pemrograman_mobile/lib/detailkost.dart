@@ -20,7 +20,7 @@ class DetailKostPage extends StatelessWidget {
           children: [
             Image.network(
               kostData['photo'],
-              width: double.infinity,
+              width: 400,
               height: 200.0,
               fit: BoxFit.cover,
             ),

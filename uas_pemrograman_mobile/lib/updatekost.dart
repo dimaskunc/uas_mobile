@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'api_manager.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class UpdateKostPage extends StatefulWidget {
   final Map<String, dynamic> kostData;
@@ -19,6 +21,7 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
   late TextEditingController _lokasiController;
   late TextEditingController _hargaController;
   late TextEditingController _fasilitasController;
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -54,7 +57,7 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
     String harga = _hargaController.text;
     String fasilitas = _fasilitasController.text;
 
-    if (nama.isEmpty || tipe.isEmpty || foto.isEmpty || lokasi.isEmpty || harga.isEmpty || fasilitas.isEmpty) {
+    if (nama.isEmpty || tipe.isEmpty || lokasi.isEmpty || harga.isEmpty || fasilitas.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Semua field harus diisi!'),
@@ -96,6 +99,18 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      setState(() {
+        _selectedImage = File(pickedImage.path);
+        _fotoController.text = pickedImage.path;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,6 +124,40 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            InkWell(
+              onTap: _pickImage,
+              child: Container(
+                margin: EdgeInsets.only(top: 16.0),
+                padding: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.image),
+                    SizedBox(width: 8.0),
+                    Text('Input Foto Kost'),
+                  ],
+                ),
+              ),
+            ),
+            // Tampilkan gambar yang dipilih
+            if (_selectedImage != null)
+              Container(
+                margin: EdgeInsets.only(top: 16.0),
+                width: 60.0,
+                height: 60.0,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8.0),
+                  image: DecorationImage(
+                    image: FileImage(_selectedImage!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             TextField(
               controller: _idController,
               decoration: InputDecoration(labelText: 'Id'),
@@ -120,10 +169,6 @@ class _UpdateKostPageState extends State<UpdateKostPage> {
             TextField(
               controller: _tipeController,
               decoration: InputDecoration(labelText: 'Tipe Kost'),
-            ),
-            TextField(
-              controller: _fotoController,
-              decoration: InputDecoration(labelText: 'URL Foto'),
             ),
             TextField(
               controller: _lokasiController,

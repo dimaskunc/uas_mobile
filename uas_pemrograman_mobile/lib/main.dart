@@ -8,14 +8,15 @@ import 'addkost.dart';
 import 'api_manager.dart';
 import 'user_manager.dart';
 import 'listkost.dart';
+import 'listkostuser.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final String baseUrl = 'http://10.10.21.41:8000/api';
-  final ApiManager apiManager = ApiManager(baseUrl: 'http://10.10.21.41:8000/api');
+  final String baseUrl = 'http://127.0.0.1:8000/api';
+  final ApiManager apiManager = ApiManager(baseUrl: 'http://127.0.0.1:8000/api');
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
           '/dashboard': (context) => DashboardPage(apiManager: ApiManager(baseUrl: baseUrl)),
           '/addkost': (context) => AddKostPage(),
           '/listkost': (context) => ListKostPage(),
+          '/home': (context) => ListKostPageUser(),
         },
       ),
     );

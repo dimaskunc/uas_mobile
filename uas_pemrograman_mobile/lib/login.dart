@@ -28,9 +28,27 @@ class _LoginPageState extends State<LoginPage> {
     final password = _passwordController.text;
 
     try {
-      final token = await apiManager.authenticate(email, password);
+      final response = await apiManager.authenticate(email, password);
+      final token = response['token'];
+      final role = response['role'];
       userManager.setAuthToken(token);
-      Navigator.pushReplacementNamed(context, '/dashboard');
+
+      if (role == 'User') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login Berhasil'),
+          ),
+        );
+        Navigator.pushReplacementNamed(context, '/home');
+      } else if (role == 'Admin') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login Berhasil'),
+          ),
+        );
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
+
     } catch (e) {
       print('Authentication failed. Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(

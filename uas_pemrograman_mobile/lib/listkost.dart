@@ -8,7 +8,7 @@ import 'api_manager.dart';
 import 'detailkost.dart';
 
 class ListKostPage extends StatelessWidget {
-  final ApiManager apiManager = ApiManager(baseUrl: 'http://10.10.21.41:8000/api');
+  final ApiManager apiManager = ApiManager(baseUrl: 'http://127.0.0.1:8000/api');
 
   @override
   Widget build(BuildContext context) {
@@ -93,13 +93,13 @@ class ListKostPage extends StatelessWidget {
 
   Widget buildKostCard(Map<String, dynamic> kostData, BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16.0),
+      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: ListTile(
         contentPadding: EdgeInsets.all(16.0),
         leading: Image.network(
-          'http://10.10.21.41:8000/img/${kostData['file_name']}',
-          width: 50.0,
-          height: 50.0,
+          kostData['photo'],
+          width: 100.0,
+          height: 100.0,
           fit: BoxFit.cover,
         ),
         title: Text(
@@ -112,7 +112,6 @@ class ListKostPage extends StatelessWidget {
             Text('Kost ${kostData['type']}'),
             Text('${kostData['location']}'),
             Text('Rp ${kostData['price']}'),
-            Text('Fasilitas : ${kostData['facilities']}'),
           ],
         ),
          onTap: () {

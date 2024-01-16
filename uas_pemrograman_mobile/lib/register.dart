@@ -30,12 +30,23 @@ class _RegisterPageState extends State<RegisterPage> {
   try {
     await apiManager.register(name, email, password);
     // Show a toast on successful registration
-
-    Navigator.pushReplacementNamed(context, '/');
+     ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registration successful!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    Navigator.pushReplacementNamed(context, '/login');
     // Handle successful registration
   } catch (e) {
     print('Registration failed. Error: $e');
     // Handle registration failure
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registrasi Gagal. Silahkan Registrasi Kembali'),
+          duration: Duration(seconds: 2),
+        ),
+      );
   }
 }
 
@@ -118,7 +129,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     // Ganti dengan aksi Anda saat klik Register
                     // Setelah berhasil mendaftar, navigasi ke halaman dashboard
                     _register(context);
-                    Navigator.pushReplacementNamed(context, '/login');
                   }
                 },
                 child: Text('Register'),
